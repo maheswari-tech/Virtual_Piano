@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Custom Sound Piano</title>
+    <style>
+        body { 
+            background: #1a1a1a; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        #piano {
+            display: flex;
+            background: #333;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .key {
+            position: relative;
+            width: 60px;
+            height: 250px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 0 0 5px 5px;
+            cursor: pointer;
+            box-sizing: border-box;
+            transition: background 0.1s, transform 0.05s;
+            z-index: 1;
+        }
+
+        .key.black {
+            width: 40px;
+            height: 150px;
+            background: #000;
+            margin-left: -20px;
+            margin-right: -20px;
+            z-index: 2;
+            border: none;
+        }
+
+        .key:active {
+            background: #eee;
+            transform: translateY(2px);
+        }
+
+        .key.black:active {
+            background: #444;
+        }
+
+        .label {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+            pointer-events: none;
+            color: #888;
+            font-size: 12px;
+        }
+
+        #status { color: #4CAF50; margin-bottom: 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div id="status">Click a key to play</div>
+
+    <div id="piano">
+        <div class="key" data-note="C4"><span class="label">C</span></div>
+        <div class="key black" data-note="Db4"><span class="label">C#</span></div>
+        <div class="key" data-note="D4"><span class="label">D</span></div>
+        <div class="key black" data-note="Eb4"><span class="label">D#</span></div>
+        <div class="key" data-note="E4"><span class="label">E</span></div>
+        <div class="key" data-note="F4"><span class="label">F</span></div>
+        <div class="key black" data-note="Gb4"><span class="label">F#</span></div>
+        <div class="key" data-note="G4"><span class="label">G</span></div>
+        <div class="key black" data-note="Ab4"><span class="label">G#</span></div>
+        <div class="key" data-note="A4"><span class="label">A</span></div>
+        <div class="key black" data-note="Bb4"><span class="label">A#</span></div>
+        <div class="key" data-note="B4"><span class="label">B</span></div>
+    </div>
+
+    <script>
+        function playSound(note) {
+            const audio = new Audio(`assets/${note}.mp3`);
+            
+            audio.play().catch(err => {
+                console.error("Audio file missing or blocked:", err);
+                document.getElementById('status').innerText = "Error: File not found in /assets";
+                document.getElementById('status').style.color = "red";
+            });
+
+            document.getElementById('status').innerText = `Playing: ${note}`;
+            document.getElementById('status').style.color = "#4CAF50";
+        }
+
+        document.querySelectorAll('.key').forEach(key => {
+            key.addEventListener('mousedown', () => {
+                const note = key.getAttribute('data-note');
+                playSound(note);
+            });
+        });
+
+        const keyMap = {
+            'a': 'C4', 'w': 'Db4', 's': 'D4', 'e': 'Eb4', 'd': 'E4', 
+            'f': 'F4', 't': 'Gb4', 'g': 'G4', 'y': 'Ab4', 'h': 'A4', 
+            'u': 'Bb4', 'j': 'B4'
+        };
+
+        window.addEventListener('keydown', (e) => {
+            const note = keyMap[e.key.toLowerCase()];
+            if (note) {
+                
+                const el = document.querySelector(`[data-note="${note}"]`);
+                el.style.background = note.includes('b') ? '#444' : '#ddd';
+                playSound(note);
+                
+                setTimeout(() => {
+                    el.style.background = note.includes('b') ? '#000' : 'white';
+                }, 100);
+            }
+        });
+    </script>
+</body>
+</html>
